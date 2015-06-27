@@ -1,0 +1,37 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Yandex Transport
+qgisMinimumVersion=2.8
+description=Layers with transport data from Yandex
+version=0.1
+author=yellow_sky
+email=nikulin.e at gmail.com
+
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=yandex transport web
+
+homepage=https://github.com/yellow-sky/qgis_yandex_transport
+tracker=https://github.com/yellow-sky/qgis_yandex_transport/issues
+repository=https://github.com/yellow-sky/qgis_yandex_transport
+category=Web
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
