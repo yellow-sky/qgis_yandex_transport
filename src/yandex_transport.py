@@ -22,6 +22,8 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+from qgis.core import QgsMapLayerRegistry
+from data_source import YandexTransportDataSource, TROLLEY
 from yandex_transport_dialog import YandexTransportDialog
 import os.path
 
@@ -91,7 +93,8 @@ class YandexTransport:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+        checkable=False):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -133,7 +136,6 @@ class YandexTransport:
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
         if status_tip is not None:
@@ -150,6 +152,12 @@ class YandexTransport:
                 self.menu,
                 action)
 
+        if checkable:
+            action.setCheckable(True)
+            action.toggled.connect(callback)
+        else:
+            action.triggered.connect(callback)
+
         self.actions.append(action)
 
         return action
@@ -161,8 +169,12 @@ class YandexTransport:
         self.add_action(
             icon_path,
             text=self.tr(u'Yandex Transport'),
-            callback=self.run,
-            parent=self.iface.mainWindow())
+            callback=self.btn_toggled,
+            parent=self.iface.mainWindow(),
+            checkable=True
+        )
+
+        self.ds = YandexTransportDataSource()
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -174,14 +186,13 @@ class YandexTransport:
         # remove the toolbar
         del self.toolbar
 
-    def run(self):
+    def btn_toggled(self, toggled):
         """Run method that performs all the real work"""
-        # show the dialog
-        self.dlg.show()
-        # Run the dialog event loop
-        result = self.dlg.exec_()
-        # See if OK was pressed
-        if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            pass
+        if toggled:
+            self.lyr = self.ds.get_layer(TROLLEY)
+            QgsMapLayerRegistry.instance().addMapLayer(self.lyr)
+        else:
+            if self.lyr:
+                QgsMapLayerRegistry.instance().removeMapLayer(self.lyr.id())
+                self.ds.resolve_layer(self.lyr)
+
