@@ -22,7 +22,7 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
-from qgis.core import QgsMapLayerRegistry
+from qgis.core import QgsMapLayerRegistry, QgsProject
 from data_source import YandexTransportDataSource, TROLLEY
 from yandex_transport_dialog import YandexTransportDialog
 import os.path
@@ -190,7 +190,9 @@ class YandexTransport:
         """Run method that performs all the real work"""
         if toggled:
             self.lyr = self.ds.get_layer(TROLLEY)
-            QgsMapLayerRegistry.instance().addMapLayer(self.lyr)
+            QgsMapLayerRegistry.instance().addMapLayer(self.lyr, False)
+            toc_root = QgsProject.instance().layerTreeRoot()
+            toc_root.insertLayer(0, self.lyr)
         else:
             if self.lyr:
                 QgsMapLayerRegistry.instance().removeMapLayer(self.lyr.id())
